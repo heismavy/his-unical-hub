@@ -33,10 +33,12 @@ main{padding-bottom:calc(100px + env(safe-area-inset-bottom,0px))}
 .lv{font-size:10.5px;font-weight:800;padding:1px 7px;border-radius:9px;background:var(--chip);border:1px solid var(--line);color:var(--ink)}
 .ver{width:15px;height:15px;color:var(--gold)}
 .txt{margin:10px 0;white-space:pre-wrap;overflow-wrap:anywhere}
-.ac{display:flex;align-items:center;gap:18px;padding:4px 0 8px}
-.ac button{display:flex;align-items:center;gap:6px;font-weight:600;font-size:13.5px}
+.emb{border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin:8px 0;font-size:14px;overflow-wrap:anywhere}
+.ac{display:flex;align-items:center;gap:16px;padding:4px 0 8px;flex-wrap:wrap}
+.ac button{display:flex;align-items:center;gap:5px;font-weight:600;font-size:13.5px}
 .ac .sp{margin-left:auto;color:var(--mute);font-size:12.5px}
 .ac .on{color:var(--heart)}
+.ac .don{color:var(--blue)}
 .rep{margin:6px 0 0 8px;padding:8px 12px;background:var(--chip);border-radius:14px;font-size:14px}
 .rf{display:flex;gap:8px;margin:8px 0}
 input,textarea,select{width:100%;font:inherit;color:var(--ink);background:var(--chip);border:2px solid transparent;border-radius:14px;padding:10px 14px;outline:0}
@@ -62,6 +64,7 @@ label{display:block;margin:10px 0 4px;color:var(--mute);font-size:13px}
 #auth h1{font-size:28px;font-weight:800;margin:12px 0 2px}
 #auth form{text-align:left}
 .err{color:var(--heart);font-size:13.5px;margin-top:10px;text-align:center;min-height:18px}
+#er{padding:0 18px}
 .pr{padding:18px}.pr .av{width:72px;height:72px;font-size:30px}
 </style>
 </head>
@@ -81,7 +84,7 @@ label{display:block;margin:10px 0 4px;color:var(--mute);font-size:13px}
 
 <div id="app" hidden>
 <header><div class="w"><div class="top"><img src="logo.png" alt="NAHISS-UCC logo"><div><h1>HIS Unical Hub</h1><small>History and International Studies</small></div></div><div id="hd"></div></div></header>
-<main class="w" id="feed"></main>
+<main class="w"><div class="err" id="er" role="alert"></div><div id="feed"></div></main>
 <button class="fab" id="fab" aria-label="New post"></button>
 <nav><div class="w" id="nv"></div></nav>
 </div>
@@ -92,12 +95,18 @@ label{display:block;margin:10px 0 4px;color:var(--mute);font-size:13px}
 <label for="ck">Category</label><select id="ck"></select>
 <button class="btn" id="cg" disabled>Post</button>
 <button class="btn alt" type="button" data-close="dc">Cancel</button></form></dialog>
+<dialog id="de"><form method="dialog" id="fe"><h2>Edit profile</h2>
+<label for="en">Name</label><input id="en" maxlength="30">
+<label for="el">Level</label><select id="el"></select>
+<label for="eb">Bio</label><textarea id="eb" rows="3" maxlength="120"></textarea>
+<button class="btn">Save</button>
+<button class="btn alt" type="button" data-close="de">Cancel</button></form></dialog>
 <dialog id="dp"><div id="pbody"></div><button class="btn alt" data-close="dp">Close</button></dialog>
 
 <script>
 var SB_URL="https://zblqlzaupaodqssowpan.supabase.co",SB_KEY="sb_publishable_Olm0SXKuzV3gopU9XWD3HQ_qg7NwSvi";
 var sb=supabase.createClient(SB_URL,SB_KEY);
-var P={heart:'<path d="M12 21s-7-4.4-9.3-9A5.3 5.3 0 0 1 12 6a5.3 5.3 0 0 1 9.3 6c-2.3 4.6-9.3 9-9.3 9z"/>',comment:'<path d="M21 12a8 8 0 0 1-11.6 7.1L3 21l1.9-5.4A8 8 0 1 1 21 12z"/>',home:'<path d="M3 11 12 3l9 8v10h-6v-6H9v6H3z"/>',search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>',user:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',mega:'<path d="M3 10v4h4l8 5V5L7 10zM18 9a4 4 0 0 1 0 6"/>',plus:'<path d="M12 5v14M5 12h14"/>'};
+var P={heart:'<path d="M12 21s-7-4.4-9.3-9A5.3 5.3 0 0 1 12 6a5.3 5.3 0 0 1 9.3 6c-2.3 4.6-9.3 9-9.3 9z"/>',down:'<path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"/>',rt:'<path d="M17 2l4 4-4 4M3 11V9a3 3 0 0 1 3-3h15M7 22l-4-4 4-4M21 13v2a3 3 0 0 1-3 3H3"/>',comment:'<path d="M21 12a8 8 0 0 1-11.6 7.1L3 21l1.9-5.4A8 8 0 1 1 21 12z"/>',home:'<path d="M3 11 12 3l9 8v10h-6v-6H9v6H3z"/>',search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>',user:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',mega:'<path d="M3 10v4h4l8 5V5L7 10zM18 9a4 4 0 0 1 0 6"/>',plus:'<path d="M12 5v14M5 12h14"/>'};
 function ic(n,f,s){return '<svg viewBox="0 0 24 24" width="'+(s||22)+'" height="'+(s||22)+'" fill="'+(f?"currentColor":"none")+'" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+P[n]+'</svg>'}
 var COL=["#ff7a59","#2f6bff","#18a975","#a259ff","#e8a317","#e5484d"];
 var VER='<svg class="ver" viewBox="0 0 24 24" fill="currentColor" aria-label="Official"><path d="M12 1l3 2.2 3.7-.3 1.2 3.5 3.1 2-1.2 3.5 1.2 3.5-3.1 2-1.2 3.5-3.7-.3L12 23l-3-2.2-3.7.3-1.2-3.5-3.1-2 1.2-3.5L1 8.9l3.1-2 1.2-3.5 3.7.3z"/><path d="m8 12 3 3 5-6" fill="none" stroke="#fff" stroke-width="2"/></svg>';
@@ -106,17 +115,23 @@ function $(i){return document.getElementById(i)}
 function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
 function ago(t){var m=Math.floor((Date.now()-new Date(t))/6e4);return m<1?"Just now":m<60?m+"m ago":m<1440?Math.floor(m/60)+"h ago":Math.floor(m/1440)+"d ago"}
 function col(id){var n=0;for(var i=0;i<id.length;i++)n+=id.charCodeAt(i);return COL[n%COL.length]}
+function er(r){var m=r&&r.error?r.error.message:"";$("er").textContent=m;return !!m}
 function av(u,sz){return '<button class="av" data-p="'+u.id+'" style="background:'+col(u.id)+(sz?";width:"+sz+"px;height:"+sz+"px":"")+'" aria-label="View '+esc(u.display_name)+'">'+esc(u.display_name[0].toUpperCase())+'</button>'}
 function fbtn(id){var f=follows.has(id);return '<button class="btn sm" data-follow="'+id+'" style="'+(f?"background:var(--chip);color:var(--ink)":"")+'">'+(f?"Following":"Follow")+'</button>'}
-function card(p){var u=p.profiles||{display_name:"?",level:"",id:p.user_id};u.id=p.user_id;users[u.id]=u;var lk=p.likes.some(function(l){return l.user_id===me.id}),own=p.user_id===me.id||me.is_admin;
-return '<article class="post'+(p.category==="Announcements"?" ann":"")+'"><div class="ph">'+av(u)+'<div><div class="nm"><span data-p="'+u.id+'">'+esc(u.display_name)+'</span>'+(u.is_admin?VER:"")+'</div><div class="mt">'+ago(p.created_at)+' <span class="lv">'+esc(u.level)+'</span> '+p.category+'</div></div></div><div class="txt">'+esc(p.body)+'</div><div class="ac"><button data-like="'+p.id+'" class="'+(lk?"on":"")+'" aria-label="Like">'+ic("heart",lk)+p.likes.length+'</button><button data-rep="'+p.id+'" aria-label="Replies">'+ic("comment")+p.replies.length+'</button>'+(own?'<button class="sp" data-del="'+p.id+'">Delete</button>':"")+'</div>'+
-(open[p.id]?p.replies.map(function(r){return '<div class="rep"><b>'+esc((r.profiles||{}).display_name)+'</b> '+esc(r.body)+'</div>'}).join("")+'<div class="rf"><input data-ri="'+p.id+'" placeholder="Reply" aria-label="Reply"><button data-send="'+p.id+'">Send</button></div>':"")+'</article>'}
+function mine(a){return a.some(function(l){return l.user_id===me.id})}
+function card(p){var u=p.profiles||{display_name:"?",level:""};u.id=p.user_id;users[u.id]=u;
+var lk=mine(p.likes),dl=mine(p.dislikes),own=p.user_id===me.id||me.is_admin,tg=p.repost_of||p.id,rs=posts.filter(function(x){return x.repost_of===tg}).length,emb="";
+if(p.repost_of){var o=posts.filter(function(x){return x.id===p.repost_of})[0];emb=o?'<div class="emb"><b>'+esc((o.profiles||{}).display_name)+'</b> <span class="mt" style="display:inline">'+ago(o.created_at)+'</span><div>'+esc(o.body)+'</div></div>':'<div class="emb mt">Original post is no longer available.</div>'}
+return '<article class="post'+(p.category==="Announcements"?" ann":"")+'"><div class="ph">'+av(u)+'<div><div class="nm"><span data-p="'+u.id+'">'+esc(u.display_name)+'</span>'+(u.is_admin?VER:"")+'</div><div class="mt">'+ago(p.created_at)+' <span class="lv">'+esc(u.level)+'</span> '+(p.repost_of?"Reshared":p.category)+'</div></div></div>'+(p.body?'<div class="txt">'+esc(p.body)+'</div>':"")+emb+
+'<div class="ac"><button data-like="'+p.id+'" class="'+(lk?"on":"")+'" aria-label="Like">'+ic("heart",lk)+p.likes.length+'</button><button data-dis="'+p.id+'" class="'+(dl?"don":"")+'" aria-label="Dislike">'+ic("down",dl)+p.dislikes.length+'</button><button data-rep="'+p.id+'" aria-label="Comments">'+ic("comment")+p.replies.length+'</button><button data-share="'+p.id+'" aria-label="Reshare">'+ic("rt")+rs+'</button>'+(own?'<button class="sp" data-del="'+p.id+'">Delete</button>':"")+'</div>'+
+(open[p.id]?p.replies.map(function(r){return '<div class="rep"><b>'+esc((r.profiles||{}).display_name)+'</b> '+esc(r.body)+((r.user_id===me.id||me.is_admin)?' <button data-delrep="'+r.id+'" aria-label="Delete comment" style="color:var(--mute)">✕</button>':"")+'</div>'}).join("")+'<div class="rf"><input data-ri="'+p.id+'" placeholder="Write a comment" aria-label="Comment"><button data-send="'+p.id+'">Send</button></div>':"")+'</article>'}
 async function refresh(){
 var f=await sb.from("follows").select("followee").eq("follower",me.id);follows=new Set((f.data||[]).map(function(x){return x.followee}));
-var r=await sb.from("posts").select("id,body,category,created_at,user_id,profiles(display_name,username,level,is_admin),likes(user_id),replies(id,body,profiles(display_name))").order("created_at",{ascending:false}).limit(100);
+var r=await sb.from("posts").select("id,body,category,repost_of,created_at,user_id,profiles(display_name,username,level,is_admin),likes(user_id),dislikes(user_id),replies(id,user_id,body,profiles(display_name))").order("created_at",{ascending:false}).limit(100);
+if(er(r)){$("er").textContent="Could not load posts: "+r.error.message}
 posts=r.data||[];render()}
 function profileHtml(u,self){var c=posts.filter(function(p){return p.user_id===u.id}).length;
-return '<div class="pr"><div class="ph">'+av(u,72)+'<div><div class="nm" style="font-size:20px">'+esc(u.display_name)+(u.is_admin?VER:"")+'</div><span class="lv">'+esc(u.level)+'</span> <span class="mt" style="display:inline">@'+esc(u.username)+'</span></div></div><p>'+esc(u.bio||"HIS student at Unical.")+'</p><div class="mt">'+c+' posts · Following '+(self?follows.size:"")+'</div>'+(self?'<button class="btn alt" data-out="1">Log out</button>':'<div style="margin-top:12px">'+fbtn(u.id)+'</div>')+'</div>'}
+return '<div class="pr"><div class="ph">'+av(u,72)+'<div><div class="nm" style="font-size:20px">'+esc(u.display_name)+(u.is_admin?VER:"")+'</div><span class="lv">'+esc(u.level)+'</span> <span class="mt" style="display:inline">@'+esc(u.username)+'</span></div></div><p>'+esc(u.bio||"HIS student at Unical.")+'</p><div class="mt">'+c+' posts'+(self?' · Following '+follows.size:"")+'</div>'+(self?'<button class="btn" data-edit="1">Edit profile</button><button class="btn alt" data-out="1">Log out</button>':'<div style="margin-top:12px">'+fbtn(u.id)+'</div>')+'</div>'}
 function render(){
 if(!me)return;
 $("nv").innerHTML=[["home","Home","home"],["notices","Notices","mega"],["search","Search","search"],["me","Profile","user"]].map(function(x){return '<button data-v="'+x[0]+'" aria-current="'+(view===x[0])+'">'+ic(x[2],view===x[0])+x[1]+'</button>'}).join("");
@@ -126,7 +141,7 @@ var h="",l;
 if(view==="home"){l=posts.filter(function(p){return tab==="Trend"||follows.has(p.user_id)||p.user_id===me.id});
 if(tab==="Trend")l=l.slice().sort(function(a,b){return b.likes.length-a.likes.length});
 h=l.length?l.map(card).join(""):'<div class="empty">'+(tab==="Trend"?"Nothing trending yet.":"Your feed is empty. Find coursemates in Search and follow them to see their posts.")+'</div>'}
-else if(view==="notices"){l=posts.filter(function(p){return p.category==="Announcements"});h='<div class="sec">Department notices</div>'+(l.length?l.map(card).join(""):'<div class="empty">No notices yet.</div>')}
+else if(view==="notices"){l=posts.filter(function(p){return p.category==="Announcements"&&!p.repost_of});h='<div class="sec">Department notices</div>'+(l.length?l.map(card).join(""):'<div class="empty">No notices yet.</div>')}
 else if(view==="search"){h='<div style="padding:14px 18px"><input id="q" placeholder="Search people" aria-label="Search" value="'+esc(q)+'"></div><div id="sr"></div>';$("feed").innerHTML=h;sres();return}
 else{users[me.id]=me;h=profileHtml(me,1)+posts.filter(function(p){return p.user_id===me.id}).map(card).join("")}
 $("feed").innerHTML=h}
@@ -149,24 +164,25 @@ if(!r.error&&!r.data.session){$("ar").textContent="Account created but not confi
 else r=await sb.auth.signInWithPassword({email:em,password:pw});
 $("ab").disabled=false;if(r.error){var m=r.error.message;$("ar").textContent=/registered/i.test(m)?"That username is taken.":/invalid login/i.test(m)?"Wrong username or password.":m;return}
 start(r.data.user.id)});
-document.addEventListener("click",async function(e){var b=e.target.closest("[data-v],[data-tab],[data-like],[data-rep],[data-send],[data-p],[data-close],[data-follow],[data-del],[data-out],#fab");if(!b)return;var d=b.dataset;
-if(d.v){view=d.v;render();scrollTo(0,0)}
+async function react(id,kind){var p=posts.filter(function(x){return x.id==id})[0],other=kind==="likes"?"dislikes":"likes",k={user_id:me.id,post_id:p.id};
+if(mine(p[kind]))er(await sb.from(kind).delete().match(k));else{await sb.from(other).delete().match(k);er(await sb.from(kind).insert(k))}refresh()}
+document.addEventListener("click",async function(e){var b=e.target.closest("[data-v],[data-tab],[data-like],[data-dis],[data-rep],[data-send],[data-p],[data-close],[data-follow],[data-del],[data-delrep],[data-share],[data-edit],[data-out],#fab");if(!b)return;var d=b.dataset;
+if(d.v){view=d.v;$("er").textContent="";render();scrollTo(0,0)}
 else if(d.tab){tab=d.tab;render()}
-else if(d.like){var p=posts.filter(function(x){return x.id==d.like})[0];if(p.likes.some(function(l){return l.user_id===me.id}))await sb.from("likes").delete().match({user_id:me.id,post_id:p.id});else await sb.from("likes").insert({user_id:me.id,post_id:p.id});refresh()}
+else if(d.like){react(d.like,"likes")}
+else if(d.dis){react(d.dis,"dislikes")}
 else if(d.rep){open[d.rep]=!open[d.rep];render()}
-else if(d.send){var i=document.querySelector('[data-ri="'+d.send+'"]'),v=i.value.trim();if(v){await sb.from("replies").insert({post_id:+d.send,user_id:me.id,body:v.slice(0,280)});refresh()}}
-else if(d.del){if(confirm("Delete this post?")){await sb.from("posts").delete().eq("id",d.del);refresh()}}
+else if(d.send){var i=document.querySelector('[data-ri="'+d.send+'"]'),v=i.value.trim();if(v){er(await sb.from("replies").insert({post_id:+d.send,user_id:me.id,body:v.slice(0,280)}));refresh()}}
+else if(d.delrep){er(await sb.from("replies").delete().eq("id",d.delrep));refresh()}
+else if(d.share){var p=posts.filter(function(x){return x.id==d.share})[0],t=p.repost_of||p.id;
+if(posts.some(function(x){return x.user_id===me.id&&x.repost_of===t})){er({error:{message:"You already reshared this."}});return}
+er(await sb.from("posts").insert({user_id:me.id,category:"General",body:"",repost_of:t}));refresh()}
+else if(d.del){if(confirm("Delete this post?")){er(await sb.from("posts").delete().eq("id",d.del));refresh()}}
 else if(d.p){if(d.p===me.id){view="me";render();return}$("pbody").innerHTML=profileHtml(users[d.p]);$("dp").showModal()}
-else if(d.follow){if(follows.has(d.follow))await sb.from("follows").delete().match({follower:me.id,followee:d.follow});else await sb.from("follows").insert({follower:me.id,followee:d.follow});if($("dp").open)$("pbody").innerHTML=profileHtml(users[d.follow]);await refresh();if(view==="search")sres()}
+else if(d.follow){if(follows.has(d.follow))er(await sb.from("follows").delete().match({follower:me.id,followee:d.follow}));else er(await sb.from("follows").insert({follower:me.id,followee:d.follow}));if($("dp").open)$("pbody").innerHTML=profileHtml(users[d.follow]);await refresh();if(view==="search")sres()}
+else if(d.edit){$("en").value=me.display_name;$("eb").value=me.bio||"";$("el").innerHTML=["100L","200L","300L","400L"].concat(me.is_admin?["Staff"]:[]).map(function(x){return "<option>"+x+"</option>"}).join("");$("el").value=me.level;$("de").showModal()}
 else if(d.close){$(d.close).close()}
 else if(d.out){await sb.auth.signOut();showAuth()}
 else if(b.id==="fab"){var o=["General","Study","Events","Questions"];if(me.is_admin)o.unshift("Announcements");$("ck").innerHTML=o.map(function(x){return "<option>"+x+"</option>"}).join("");if(view==="notices"&&me.is_admin)$("ck").value="Announcements";$("dc").showModal()}});
 document.addEventListener("input",function(e){if(e.target.id==="q"){q=e.target.value;clearTimeout(window._t);window._t=setTimeout(sres,250)}});
-$("ct").addEventListener("input",function(){var n=280-this.value.length;$("cc").textContent=n;$("cg").disabled=!this.value.trim()||n<0});
-$("fc").addEventListener("submit",async function(){var t=$("ct").value.trim();if(!t||t.length>280)return;var r=await sb.from("posts").insert({user_id:me.id,category:$("ck").value,body:t});if(r.error)alert(r.error.message);$("ct").value="";$("cc").textContent=280;$("cg").disabled=true;refresh()});
-setInterval(function(){var a=document.activeElement;if(me&&!(a&&/INPUT|TEXTAREA|SELECT/.test(a.tagName))&&!$("dc").open&&!$("dp").open)refresh()},30000);
-authMode();
-sb.auth.getSession().then(function(r){r.data.session?start(r.data.session.user.id):showAuth()});
-</script>
-</body>
-</html>
+$("ct").addEventListener("input",function(){var n=280-
