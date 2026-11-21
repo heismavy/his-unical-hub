@@ -185,4 +185,14 @@ else if(d.close){$(d.close).close()}
 else if(d.out){await sb.auth.signOut();showAuth()}
 else if(b.id==="fab"){var o=["General","Study","Events","Questions"];if(me.is_admin)o.unshift("Announcements");$("ck").innerHTML=o.map(function(x){return "<option>"+x+"</option>"}).join("");if(view==="notices"&&me.is_admin)$("ck").value="Announcements";$("dc").showModal()}});
 document.addEventListener("input",function(e){if(e.target.id==="q"){q=e.target.value;clearTimeout(window._t);window._t=setTimeout(sres,250)}});
-$("ct").addEventListener("input",function(){var n=280-
+$("ct").addEventListener("input",function(){var n=280-this.value.length;$("cc").textContent=n;$("cg").disabled=!this.value.trim()||n<0});
+$("fc").addEventListener("submit",async function(){var t=$("ct").value.trim();if(!t||t.length>280)return;er(await sb.from("posts").insert({user_id:me.id,category:$("ck").value,body:t}));$("ct").value="";$("cc").textContent=280;$("cg").disabled=true;refresh()});
+$("fe").addEventListener("submit",async function(){var n=$("en").value.trim(),bio=$("eb").value.trim(),l=$("el").value;if(n.length<2){er({error:{message:"Name must be at least 2 letters."}});return}
+if(er(await sb.from("profiles").update({display_name:n,bio:bio,level:l}).eq("id",me.id)))return;
+me.display_name=n;me.bio=bio;me.level=l;refresh()});
+setInterval(function(){var a=document.activeElement;if(me&&!(a&&/INPUT|TEXTAREA|SELECT/.test(a.tagName))&&!$("dc").open&&!$("dp").open&&!$("de").open)refresh()},30000);
+authMode();
+sb.auth.getSession().then(function(r){r.data.session?start(r.data.session.user.id):showAuth()});
+</script>
+</body>
+</html>
