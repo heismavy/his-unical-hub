@@ -127,7 +127,7 @@ return '<article class="post'+(p.category==="Announcements"?" ann":"")+'"><div c
 (open[p.id]?p.replies.map(function(r){return '<div class="rep"><b>'+esc((r.profiles||{}).display_name)+'</b> '+esc(r.body)+((r.user_id===me.id||me.is_admin)?' <button data-delrep="'+r.id+'" aria-label="Delete comment" style="color:var(--mute)">✕</button>':"")+'</div>'}).join("")+'<div class="rf"><input data-ri="'+p.id+'" placeholder="Write a comment" aria-label="Comment"><button data-send="'+p.id+'">Send</button></div>':"")+'</article>'}
 async function refresh(){
 var f=await sb.from("follows").select("followee").eq("follower",me.id);follows=new Set((f.data||[]).map(function(x){return x.followee}));
-var r=await sb.from("posts").select("id,body,category,repost_of,created_at,user_id,profiles(display_name,username,level,is_admin),likes(user_id),dislikes(user_id),replies(id,user_id,body,profiles(display_name))").order("created_at",{ascending:false}).limit(100);
+var r=await sb.from("posts").select("id,body,category,repost_of,created_at,user_id,profiles!user_id(display_name,username,level,is_admin),likes(user_id),dislikes(user_id),replies(id,user_id,body,profiles!user_id(display_name))").order("created_at",{ascending:false}).limit(100);
 if(er(r)){$("er").textContent="Could not load posts: "+r.error.message}
 posts=r.data||[];render()}
 function profileHtml(u,self){var c=posts.filter(function(p){return p.user_id===u.id}).length;
