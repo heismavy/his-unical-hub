@@ -17,9 +17,7 @@ st.textContent=`
 document.head.appendChild(st);
 
 P.bell='<path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"/>';
-var T={like:"liked your post",comment:"commented on your post",reshare:"reshared your post",follow:"started following you",notice:"posted a new notice"};
-var items=[],lastId=null;
-
+var T={like:"liked your post",comment:"commented on your post",reshare:"reshared your post",follow:"started following you",notice:"posted a new notice",post:"made a new post"};
 var bell=document.createElement("button");
 bell.id="nbell";bell.setAttribute("aria-label","Notifications");
 bell.innerHTML=ic("bell",0,24)+'<span id="nbadge" hidden></span>';
